@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import icon from 'astro-icon';
 
 // Published as a GitHub Pages "project site":
 //   https://mulesoft-accelerator.github.io/agent-fabric-jumpstarts/
@@ -8,6 +9,8 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
   site: 'https://mulesoft-accelerator.github.io',
   base: '/agent-fabric-jumpstarts',
+  // Local SVG icons (reused from MuleSoft Omni) live in src/icons/.
+  integrations: [icon({ iconDir: 'src/icons' })],
   markdown: {
     shikiConfig: {
       // Dual themes; class-based dark mode is wired up in BaseLayout.astro.

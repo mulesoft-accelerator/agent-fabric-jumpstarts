@@ -1,4 +1,5 @@
 ---
+import { Icon } from 'astro-icon/components';
 import { menu, withBase, type Feature } from '../data/site';
 
 interface Props {
@@ -7,7 +8,6 @@ interface Props {
 }
 const { activeId } = Astro.props;
 
-// A feature is "live" (linkable) when it has an area page with guides.
 function isLive(f: Feature): boolean {
   return Boolean(f.path && (f.guides?.length ?? 0) > 0);
 }
@@ -15,80 +15,119 @@ function isLive(f: Feature): boolean {
 
 <nav class="rail" aria-label="MuleSoft Agent Fabric">
   <div class="rail-head">
-    <span class="rail-mark" aria-hidden="true">◆</span>
+    <Icon name="agent-fabric" class="rail-mark" size={22} />
     <span class="rail-title">Agent Fabric</span>
   </div>
 
-  {
-    menu.map((group) => (
-      <div class="rail-group">
-        <p class="rail-group-title">{group.group}</p>
-        <ul>
-          {group.features.map((feature) =>
-            feature.children ? (
-              <li class="rail-parent">
-                <span class="rail-item rail-item--parent">
-                  <span class="rail-icon" aria-hidden="true">{feature.icon}</span>
-                  {feature.name}
-                </span>
-                <ul class="rail-children">
-                  {feature.children.map((child) => (
-                    <li>
-                      {isLive(child) ? (
-                        <a
-                          href={withBase(child.path!)}
-                          class={`rail-item ${activeId === child.id ? 'active' : ''}`}
-                        >
-                          <span class="rail-icon" aria-hidden="true">{child.icon}</span>
-                          <span class="rail-label">{child.name}</span>
-                          <span class="rail-count">{child.guides!.length}</span>
-                        </a>
-                      ) : (
-                        <span class="rail-item rail-item--soon" title="Coming soon">
-                          <span class="rail-icon" aria-hidden="true">{child.icon}</span>
-                          <span class="rail-label">{child.name}</span>
-                          <span class="rail-soon">soon</span>
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ) : (
-              <li>
-                {isLive(feature) ? (
-                  <a
-                    href={withBase(feature.path!)}
-                    class={`rail-item ${activeId === feature.id ? 'active' : ''}`}
-                  >
-                    <span class="rail-icon" aria-hidden="true">{feature.icon}</span>
+  <div class="rail-scroll">
+    {
+      menu.map((group) => (
+        <div class="rail-group">
+          <p class="rail-group-title">{group.group}</p>
+          <ul>
+            {group.features.map((feature) =>
+              feature.children ? (
+                <li class="rail-parent">
+                  <span class="rail-item rail-item--parent" title={feature.name}>
+                    {feature.icon && <Icon name={feature.icon} class="rail-icon" size={20} />}
                     <span class="rail-label">{feature.name}</span>
-                    <span class="rail-count">{feature.guides!.length}</span>
-                  </a>
-                ) : (
-                  <span class="rail-item rail-item--soon" title="Coming soon">
-                    <span class="rail-icon" aria-hidden="true">{feature.icon}</span>
-                    <span class="rail-label">{feature.name}</span>
-                    <span class="rail-soon">soon</span>
                   </span>
-                )}
-              </li>
-            )
-          )}
-        </ul>
-      </div>
-    ))
-  }
+                  <ul class="rail-children">
+                    {feature.children.map((child) => (
+                      <li>
+                        {isLive(child) ? (
+                          <a
+                            href={withBase(child.path!)}
+                            class={`rail-item ${activeId === child.id ? 'active' : ''}`}
+                            title={child.name}
+                          >
+                            {child.icon && <Icon name={child.icon} class="rail-icon" size={20} />}
+                            <span class="rail-label">{child.name}</span>
+                            <span class="rail-count">{child.guides!.length}</span>
+                          </a>
+                        ) : (
+                          <span class="rail-item rail-item--soon" title={`${child.name} — coming soon`}>
+                            {child.icon && <Icon name={child.icon} class="rail-icon" size={20} />}
+                            <span class="rail-label">{child.name}</span>
+                            <span class="rail-soon">Soon</span>
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              ) : (
+                <li>
+                  {isLive(feature) ? (
+                    <a
+                      href={withBase(feature.path!)}
+                      class={`rail-item ${activeId === feature.id ? 'active' : ''}`}
+                      title={feature.name}
+                    >
+                      {feature.icon && <Icon name={feature.icon} class="rail-icon" size={20} />}
+                      <span class="rail-label">{feature.name}</span>
+                      <span class="rail-count">{feature.guides!.length}</span>
+                    </a>
+                  ) : (
+                    <span class="rail-item rail-item--soon" title={`${feature.name} — coming soon`}>
+                      {feature.icon && <Icon name={feature.icon} class="rail-icon" size={20} />}
+                      <span class="rail-label">{feature.name}</span>
+                      <span class="rail-soon">Soon</span>
+                    </span>
+                  )}
+                </li>
+              )
+            )}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+
+  <button
+    id="rail-toggle"
+    class="rail-toggle"
+    type="button"
+    aria-label="Collapse navigation"
+    aria-pressed="false"
+  >
+    <Icon name="arrow-bar-left" class="rail-toggle-icon rail-toggle-icon--collapse" size={20} />
+    <Icon name="arrow-bar-right" class="rail-toggle-icon rail-toggle-icon--expand" size={20} />
+    <span class="rail-toggle-label">Collapse</span>
+  </button>
 </nav>
+
+<script is:inline>
+  (function () {
+    const btn = document.getElementById('rail-toggle');
+    if (!btn) return;
+    const sync = () => {
+      const collapsed = document.documentElement.classList.contains('nav-collapsed');
+      btn.setAttribute('aria-pressed', String(collapsed));
+      btn.setAttribute('aria-label', collapsed ? 'Expand navigation' : 'Collapse navigation');
+    };
+    btn.addEventListener('click', () => {
+      const collapsed = document.documentElement.classList.toggle('nav-collapsed');
+      try {
+        localStorage.setItem('navCollapsed', collapsed ? '1' : '0');
+      } catch (e) {}
+      sync();
+    });
+    sync();
+  })();
+</script>
 
 <style>
   .rail {
     font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   .rail-head {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.55rem;
     font-weight: 650;
     letter-spacing: -0.01em;
     padding: 0 0.6rem 0.9rem;
@@ -97,18 +136,24 @@ function isLive(f: Feature): boolean {
   }
   .rail-mark {
     color: var(--accent);
+    flex-shrink: 0;
+  }
+  .rail-scroll {
+    flex: 1;
+    min-height: 0;
   }
   .rail-group + .rail-group {
-    margin-top: 1.25rem;
+    margin-top: 1.1rem;
   }
   .rail-group-title {
     font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    color: var(--accent);
     font-weight: 650;
-    margin: 0 0 0.4rem;
+    margin: 0 0 0.35rem;
     padding: 0 0.6rem;
+    opacity: 0.85;
   }
   .rail ul {
     list-style: none;
@@ -116,21 +161,22 @@ function isLive(f: Feature): boolean {
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.12rem;
+    gap: 0.1rem;
   }
   .rail-children {
-    margin-top: 0.12rem;
-    padding-left: 0.9rem;
+    margin-top: 0.1rem;
+    padding-left: 1rem;
     border-left: 1px solid var(--border);
-    margin-left: 0.95rem;
+    margin-left: 1.15rem;
   }
   .rail-item {
     display: flex;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.4rem 0.6rem;
-    border-radius: 8px;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: 10px;
     color: var(--text-soft);
+    white-space: nowrap;
   }
   a.rail-item:hover {
     background: var(--bg-soft);
@@ -142,18 +188,25 @@ function isLive(f: Feature): boolean {
     color: var(--accent);
     font-weight: 600;
   }
+  .rail-item.active .rail-icon {
+    color: var(--accent);
+  }
   .rail-item--parent {
     color: var(--text);
     font-weight: 550;
     cursor: default;
   }
   .rail-icon {
-    width: 1.15rem;
-    text-align: center;
+    color: var(--text-muted);
     flex-shrink: 0;
+  }
+  a.rail-item:hover .rail-icon {
+    color: var(--text);
   }
   .rail-label {
     flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .rail-count {
     font-size: 0.72rem;
@@ -167,10 +220,13 @@ function isLive(f: Feature): boolean {
   }
   .rail-item--soon {
     color: var(--text-muted);
-    cursor: not-allowed;
+    cursor: default;
+  }
+  .rail-item--soon .rail-icon {
+    opacity: 0.6;
   }
   .rail-soon {
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-weight: 600;
@@ -178,5 +234,68 @@ function isLive(f: Feature): boolean {
     border: 1px solid var(--border);
     border-radius: 999px;
     padding: 0.02rem 0.4rem;
+  }
+
+  /* Collapse toggle */
+  .rail-toggle {
+    margin-top: 0.75rem;
+    padding: 0.5rem 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    border: none;
+    background: none;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    font: inherit;
+    border-radius: 0;
+  }
+  .rail-toggle:hover {
+    color: var(--text);
+  }
+  .rail-toggle-icon {
+    flex-shrink: 0;
+  }
+  .rail-toggle-icon--expand {
+    display: none;
+  }
+  .rail-toggle-label {
+    font-size: 0.85rem;
+  }
+
+  /* ---------- Collapsed (icon-only) state ---------- */
+  :global(html.nav-collapsed) .rail-title,
+  :global(html.nav-collapsed) .rail-label,
+  :global(html.nav-collapsed) .rail-count,
+  :global(html.nav-collapsed) .rail-soon,
+  :global(html.nav-collapsed) .rail-group-title,
+  :global(html.nav-collapsed) .rail-toggle-label {
+    display: none;
+  }
+  :global(html.nav-collapsed) .rail-head,
+  :global(html.nav-collapsed) .rail-item,
+  :global(html.nav-collapsed) .rail-toggle {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    gap: 0;
+  }
+  :global(html.nav-collapsed) .rail-children {
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+  }
+  :global(html.nav-collapsed) .rail-group + .rail-group {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+  :global(html.nav-collapsed) .rail-toggle-icon--collapse {
+    display: none;
+  }
+  :global(html.nav-collapsed) .rail-toggle-icon--expand {
+    display: inline;
   }
 </style>

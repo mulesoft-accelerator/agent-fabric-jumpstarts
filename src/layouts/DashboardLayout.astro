@@ -32,6 +32,11 @@ const { title, description, activeId, footerLabel } = Astro.props;
     padding-top: 2rem;
     padding-bottom: 4rem;
     align-items: start;
+    transition: grid-template-columns 0.18s ease;
+  }
+  :global(html.nav-collapsed) .dash {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 1.75rem;
   }
   .dash-rail {
     position: sticky;
