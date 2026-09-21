@@ -1,0 +1,160 @@
+---
+import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { withBase, formatDate, locate } from '../../data/site';
+
+const found = locate(Astro.url.pathname);
+const feature = found?.feature;
+const guides = feature?.guides ?? [];
+const home = withBase('');
+---
+
+<DashboardLayout
+  title={feature?.name}
+  description={`How-to guides for ${feature?.name} in MuleSoft Agent Fabric.`}
+  activeId={feature?.id}
+  footerLabel={feature?.name}
+>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href={home}>Guides</a>
+    <span aria-hidden="true">/</span>
+    {found?.group && <span>{found.group}</span>}
+    {
+      found?.parent && (
+        <>
+          <span aria-hidden="true">/</span>
+          <span>{found.parent.name}</span>
+        </>
+      )
+    }
+    <span aria-hidden="true">/</span>
+    <span class="crumb-current">{feature?.name}</span>
+  </nav>
+
+  <header class="area-head">
+    <span class="area-icon" aria-hidden="true">{feature?.icon}</span>
+    <div>
+      <h1>{feature?.name}</h1>
+      <p class="lede">
+        Metered access to model proxies with per-team spending and token limits. Pick a guide to
+        get started.
+      </p>
+    </div>
+  </header>
+
+  <div class="card-grid">
+    {
+      guides.map((guide) => (
+        <a class="card" href={withBase(guide.href)}>
+          <h2>{guide.title}</h2>
+          {guide.summary && <p>{guide.summary}</p>}
+          <div class="card-footer">
+            {guide.updated && (
+              <span class="card-meta">
+                <span aria-hidden="true">🕑</span>
+                Updated {formatDate(guide.updated)}
+              </span>
+            )}
+            <span class="card-cta">Open guide →</span>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</DashboardLayout>
+
+<style>
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+  }
+  .crumbs a {
+    color: var(--text-soft);
+  }
+  .crumb-current {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .area-head {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.75rem;
+  }
+  .area-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .area-head h1 {
+    font-size: clamp(1.8rem, 4vw, 2.3rem);
+    letter-spacing: -0.02em;
+    margin: 0 0 0.4rem;
+  }
+  .lede {
+    margin: 0;
+    color: var(--text-soft);
+    max-width: 42rem;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.1rem;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    transition: transform 0.12s ease, border-color 0.12s ease;
+  }
+  .card:hover {
+    text-decoration: none;
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+  .card h2 {
+    margin: 0;
+    font-size: 1.12rem;
+    letter-spacing: -0.01em;
+  }
+  .card p {
+    margin: 0;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    flex: 1;
+  }
+  .card-footer {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .card-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .card-cta {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+</style>

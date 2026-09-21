@@ -1,0 +1,182 @@
+---
+import { menu, withBase, type Feature } from '../data/site';
+
+interface Props {
+  /** id of the currently active feature (highlighted). */
+  activeId?: string;
+}
+const { activeId } = Astro.props;
+
+// A feature is "live" (linkable) when it has an area page with guides.
+function isLive(f: Feature): boolean {
+  return Boolean(f.path && (f.guides?.length ?? 0) > 0);
+}
+---
+
+<nav class="rail" aria-label="MuleSoft Agent Fabric">
+  <div class="rail-head">
+    <span class="rail-mark" aria-hidden="true">◆</span>
+    <span class="rail-title">Agent Fabric</span>
+  </div>
+
+  {
+    menu.map((group) => (
+      <div class="rail-group">
+        <p class="rail-group-title">{group.group}</p>
+        <ul>
+          {group.features.map((feature) =>
+            feature.children ? (
+              <li class="rail-parent">
+                <span class="rail-item rail-item--parent">
+                  <span class="rail-icon" aria-hidden="true">{feature.icon}</span>
+                  {feature.name}
+                </span>
+                <ul class="rail-children">
+                  {feature.children.map((child) => (
+                    <li>
+                      {isLive(child) ? (
+                        <a
+                          href={withBase(child.path!)}
+                          class={`rail-item ${activeId === child.id ? 'active' : ''}`}
+                        >
+                          <span class="rail-icon" aria-hidden="true">{child.icon}</span>
+                          <span class="rail-label">{child.name}</span>
+                          <span class="rail-count">{child.guides!.length}</span>
+                        </a>
+                      ) : (
+                        <span class="rail-item rail-item--soon" title="Coming soon">
+                          <span class="rail-icon" aria-hidden="true">{child.icon}</span>
+                          <span class="rail-label">{child.name}</span>
+                          <span class="rail-soon">soon</span>
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ) : (
+              <li>
+                {isLive(feature) ? (
+                  <a
+                    href={withBase(feature.path!)}
+                    class={`rail-item ${activeId === feature.id ? 'active' : ''}`}
+                  >
+                    <span class="rail-icon" aria-hidden="true">{feature.icon}</span>
+                    <span class="rail-label">{feature.name}</span>
+                    <span class="rail-count">{feature.guides!.length}</span>
+                  </a>
+                ) : (
+                  <span class="rail-item rail-item--soon" title="Coming soon">
+                    <span class="rail-icon" aria-hidden="true">{feature.icon}</span>
+                    <span class="rail-label">{feature.name}</span>
+                    <span class="rail-soon">soon</span>
+                  </span>
+                )}
+              </li>
+            )
+          )}
+        </ul>
+      </div>
+    ))
+  }
+</nav>
+
+<style>
+  .rail {
+    font-size: 0.9rem;
+  }
+  .rail-head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    padding: 0 0.6rem 0.9rem;
+    margin-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .rail-mark {
+    color: var(--accent);
+  }
+  .rail-group + .rail-group {
+    margin-top: 1.25rem;
+  }
+  .rail-group-title {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 650;
+    margin: 0 0 0.4rem;
+    padding: 0 0.6rem;
+  }
+  .rail ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+  }
+  .rail-children {
+    margin-top: 0.12rem;
+    padding-left: 0.9rem;
+    border-left: 1px solid var(--border);
+    margin-left: 0.95rem;
+  }
+  .rail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.4rem 0.6rem;
+    border-radius: 8px;
+    color: var(--text-soft);
+  }
+  a.rail-item:hover {
+    background: var(--bg-soft);
+    color: var(--text);
+    text-decoration: none;
+  }
+  .rail-item.active {
+    background: var(--accent-wash);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .rail-item--parent {
+    color: var(--text);
+    font-weight: 550;
+    cursor: default;
+  }
+  .rail-icon {
+    width: 1.15rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .rail-label {
+    flex: 1;
+  }
+  .rail-count {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-wash);
+    border-radius: 999px;
+    padding: 0.05rem 0.45rem;
+    min-width: 1.4rem;
+    text-align: center;
+  }
+  .rail-item--soon {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  .rail-soon {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.02rem 0.4rem;
+  }
+</style>
