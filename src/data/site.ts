@@ -29,8 +29,10 @@ export interface Feature {
   name: string;
   /** URL-safe id, also used as the client anchor. */
   id: string;
-  /** Emoji marker shown in the rail and cards. */
+  /** astro-icon name (local SVG in src/icons/) shown in the rail and cards. */
   icon?: string;
+  /** SLDS entity color (matches MuleSoft Omni) used to tint the icon chip. */
+  color?: string;
   /** Area page path (relative to BASE_URL). Present when the feature has guides. */
   path?: string;
   /** Sub-features (e.g. Model Proxies -> Models / Model Wallets / ...). */
@@ -65,46 +67,48 @@ export const menu: MenuGroup[] = [
   {
     group: 'Portfolio',
     features: [
-      { name: 'Agents', id: 'agents', icon: '🤖' },
-      { name: 'MCP Servers', id: 'mcp-servers', icon: '🔌' },
+      { name: 'Agents', id: 'agents', icon: 'bot', color: '#3a49da' },
+      { name: 'MCP Servers', id: 'mcp-servers', icon: 'mcp', color: '#ba01ff' },
       {
         name: 'Model Proxies',
         id: 'model-proxies',
-        icon: '🧭',
+        icon: 'llm',
+        color: '#0176d3',
         children: [
-          { name: 'Models', id: 'models', icon: '◇' },
+          { name: 'Models', id: 'models', icon: 'atom', color: '#ff538a' },
           {
             name: 'Model Wallets',
             id: 'model-wallets',
-            icon: '👛',
+            icon: 'wallet',
+            color: '#0176d3',
             path: 'model-wallet-guide/',
             guides: modelWalletGuides,
           },
-          { name: 'Semantic Services', id: 'semantic-services', icon: '🧠' },
+          { name: 'Semantic Services', id: 'semantic-services', icon: 'semantic-service', color: '#0d9dda' },
         ],
       },
-      { name: 'APIs', id: 'apis', icon: '🌐' },
-      { name: 'Gateways', id: 'gateways', icon: '🚦' },
+      { name: 'APIs', id: 'apis', icon: 'globe', color: '#0176d3' },
+      { name: 'Gateways', id: 'gateways', icon: 'flow', color: '#0d9dda' },
     ],
   },
   {
     group: 'Governance',
     features: [
-      { name: 'Cost Management', id: 'cost-management', icon: '💳' },
-      { name: 'Security', id: 'security', icon: '🛡️' },
-      { name: 'Governance Strategies', id: 'governance-strategies', icon: '📐' },
+      { name: 'Cost Management', id: 'cost-management', icon: 'gauge', color: '#2e844a' },
+      { name: 'Security', id: 'security', icon: 'shield-lock', color: '#ea001e' },
+      { name: 'Governance Strategies', id: 'governance-strategies', icon: 'shield-check', color: '#a96504' },
     ],
   },
   {
     group: 'Observability',
     features: [
-      { name: 'Performance', id: 'performance', icon: '📊' },
-      { name: 'Notifications', id: 'notifications', icon: '🔔' },
+      { name: 'Performance', id: 'performance', icon: 'chart-bar', color: '#3a49da' },
+      { name: 'Notifications', id: 'notifications', icon: 'bell', color: '#a96504' },
     ],
   },
   {
     group: 'Platform',
-    features: [{ name: 'Providers', id: 'providers', icon: '🧩' }],
+    features: [{ name: 'Providers', id: 'providers', icon: 'server-double', color: '#757575' }],
   },
 ];
 

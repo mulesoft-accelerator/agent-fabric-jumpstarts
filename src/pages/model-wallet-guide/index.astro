@@ -1,5 +1,6 @@
 ---
 import DashboardLayout from '../../layouts/DashboardLayout.astro';
+import { Icon } from 'astro-icon/components';
 import { withBase, formatDate, locate } from '../../data/site';
 
 const found = locate(Astro.url.pathname);
@@ -31,7 +32,9 @@ const home = withBase('');
   </nav>
 
   <header class="area-head">
-    <span class="area-icon" aria-hidden="true">{feature?.icon}</span>
+    <span class="area-icon" aria-hidden="true" style={`--feat:${feature?.color ?? 'var(--accent)'}`}>
+      {feature?.icon && <Icon name={feature.icon} size={26} />}
+    </span>
     <div>
       <h1>{feature?.name}</h1>
       <p class="lede">
@@ -87,9 +90,15 @@ const home = withBase('');
     margin-bottom: 1.75rem;
   }
   .area-icon {
-    font-size: 2rem;
+    display: inline-grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 12px;
     line-height: 1;
     flex-shrink: 0;
+    color: var(--feat, var(--accent));
+    background: color-mix(in srgb, var(--feat, var(--accent)) 14%, transparent);
   }
   .area-head h1 {
     font-size: clamp(1.8rem, 4vw, 2.3rem);

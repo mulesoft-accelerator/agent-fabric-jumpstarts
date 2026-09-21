@@ -85,7 +85,7 @@ Copy and paste this whole block into your Terminal (after replacing the web addr
 ```bash
 curl --location "https://REPLACE-WITH-YOUR-PROXY-URL/openai/v1/chat/completions" \
   --header "client_id: b879419E7F5F45B19a6b23f70Bfd62ce" \
-  --header "client_secret: randome_secret" \
+  --header "client_secret: random_secret" \
   --header "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdXBwb3J0LXRlYW0tdXNlciIsIm5hbWUiOiJTdXBwb3J0IFRlYW0gVXNlciIsImdyb3VwIjoic3VwcG9ydCIsImlhdCI6MTc5MDAxMTgxOCwibmJmIjoxNzkwMDExODE4LCJleHAiOjE4MjE1NDc4MTh9.148qHixuvcrNnj2rQVYmyKHHNBGBhrhdsoFwpUpNnGU" \
   --header "Content-Type: application/json" \
   --data '{
@@ -134,7 +134,7 @@ It should be allowed through but **not counted** against the wallet.
 ```bash
 curl --location "https://REPLACE-WITH-YOUR-PROXY-URL/openai/v1/chat/completions" \
   --header "client_id: b879419E7F5F45B19a6b23f70Bfd62ce" \
-  --header "client_secret: randome_secret" \
+  --header "client_secret: random_secret" \
   --header "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJvdGhlci11c2VyIiwibmFtZSI6Ik5vbi1TdXBwb3J0IFVzZXIiLCJncm91cCI6Im90aGVyIiwiaWF0IjoxNzkwMDExODE4LCJuYmYiOjE3OTAwMTE4MTgsImV4cCI6MTgyMTU0NzgxOH0.owqdUtpNpytQqeHbv6qq1fiEqRUx900gecqjgdveS7w" \
   --header "Content-Type: application/json" \
   --data '{

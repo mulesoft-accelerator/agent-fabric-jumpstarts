@@ -1,5 +1,6 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
+import { Icon } from 'astro-icon/components';
 import { site, menu, withBase, guideCount, type Feature } from '../data/site';
 
 interface Area {
@@ -58,7 +59,9 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
             isLive(a.feature) ? (
               <a class="tile" href={withBase(a.feature.path!)}>
                 <div class="tile-top">
-                  <span class="tile-icon" aria-hidden="true">{a.feature.icon}</span>
+                  <span class="tile-icon" aria-hidden="true" style={`--feat:${a.feature.color ?? 'var(--text-muted)'}`}>
+                    {a.feature.icon && <Icon name={a.feature.icon} size={22} />}
+                  </span>
                   {a.parent && <span class="tile-parent">{a.parent}</span>}
                 </div>
                 <h3>{a.feature.name}</h3>
@@ -70,7 +73,9 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
             ) : (
               <div class="tile tile--soon">
                 <div class="tile-top">
-                  <span class="tile-icon" aria-hidden="true">{a.feature.icon}</span>
+                  <span class="tile-icon" aria-hidden="true" style={`--feat:${a.feature.color ?? 'var(--text-muted)'}`}>
+                    {a.feature.icon && <Icon name={a.feature.icon} size={22} />}
+                  </span>
                   {a.parent && <span class="tile-parent">{a.parent}</span>}
                 </div>
                 <h3>{a.feature.name}</h3>
@@ -180,8 +185,18 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
     gap: 0.5rem;
   }
   .tile-icon {
-    font-size: 1.3rem;
+    display: inline-grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 10px;
     line-height: 1;
+    color: var(--feat, var(--text-muted));
+    background: color-mix(in srgb, var(--feat, var(--text-muted)) 14%, transparent);
+  }
+  .tile--soon .tile-icon {
+    color: var(--text-muted);
+    background: var(--bg-soft);
   }
   .tile-parent {
     font-size: 0.68rem;
