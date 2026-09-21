@@ -1,0 +1,232 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import { site, menu, withBase, guideCount, type Feature } from '../data/site';
+
+interface Area {
+  group: string;
+  parent?: string;
+  feature: Feature;
+}
+
+// Flatten the taxonomy to leaf "areas", keeping their group + parent context.
+const areasByGroup = menu.map((g) => ({
+  group: g.group,
+  areas: g.features.flatMap<Area>((f) =>
+    (f.children ?? [f]).map((leaf) => ({
+      group: g.group,
+      parent: f.children ? f.name : undefined,
+      feature: leaf,
+    }))
+  ),
+}));
+
+const allAreas = areasByGroup.flatMap((g) => g.areas);
+const liveAreas = allAreas.filter((a) => (a.feature.guides?.length ?? 0) > 0).length;
+const totalGuides = guideCount();
+
+const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
+---
+
+<DashboardLayout>
+  <header class="welcome">
+    <span class="eyebrow">MuleSoft Agent Fabric</span>
+    <h1>{site.title}</h1>
+    <p class="lede">{site.tagline}</p>
+  </header>
+
+  <div class="stats" role="list">
+    <div class="stat" role="listitem">
+      <span class="stat-num">{totalGuides}</span>
+      <span class="stat-label">Guides published</span>
+    </div>
+    <div class="stat" role="listitem">
+      <span class="stat-num">{liveAreas}</span>
+      <span class="stat-label">Areas live</span>
+    </div>
+    <div class="stat" role="listitem">
+      <span class="stat-num">{allAreas.length}</span>
+      <span class="stat-label">Areas mapped</span>
+    </div>
+  </div>
+
+  {
+    areasByGroup.map((g) => (
+      <section class="group">
+        <h2 class="group-title">{g.group}</h2>
+        <div class="card-grid">
+          {g.areas.map((a) =>
+            isLive(a.feature) ? (
+              <a class="tile" href={withBase(a.feature.path!)}>
+                <div class="tile-top">
+                  <span class="tile-icon" aria-hidden="true">{a.feature.icon}</span>
+                  {a.parent && <span class="tile-parent">{a.parent}</span>}
+                </div>
+                <h3>{a.feature.name}</h3>
+                <p class="tile-meta">
+                  {a.feature.guides!.length} guide{a.feature.guides!.length === 1 ? '' : 's'}
+                </p>
+                <span class="tile-cta">Explore →</span>
+              </a>
+            ) : (
+              <div class="tile tile--soon">
+                <div class="tile-top">
+                  <span class="tile-icon" aria-hidden="true">{a.feature.icon}</span>
+                  {a.parent && <span class="tile-parent">{a.parent}</span>}
+                </div>
+                <h3>{a.feature.name}</h3>
+                <p class="tile-meta">Guides coming soon</p>
+                <span class="tile-soon">Coming soon</span>
+              </div>
+            )
+          )}
+        </div>
+      </section>
+    ))
+  }
+</DashboardLayout>
+
+<style>
+  .welcome {
+    margin-bottom: 1.5rem;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-wash);
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    margin-bottom: 0.9rem;
+  }
+  .welcome h1 {
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.6rem;
+  }
+  .lede {
+    font-size: 1.08rem;
+    color: var(--text-soft);
+    max-width: 42rem;
+    margin: 0;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.75rem 0 2.5rem;
+  }
+  .stat {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .stat-num {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .group + .group {
+    margin-top: 2.5rem;
+  }
+  .group-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 650;
+    margin: 0 0 1rem;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 1rem;
+  }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.15rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-elevated);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    transition: transform 0.12s ease, border-color 0.12s ease;
+  }
+  a.tile:hover {
+    text-decoration: none;
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+  .tile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .tile-icon {
+    font-size: 1.3rem;
+    line-height: 1;
+  }
+  .tile-parent {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    background: var(--bg-soft);
+    border-radius: 999px;
+    padding: 0.15rem 0.5rem;
+  }
+  .tile h3 {
+    margin: 0.2rem 0 0;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+  }
+  .tile-meta {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    flex: 1;
+  }
+  .tile-cta {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .tile--soon {
+    opacity: 0.62;
+    box-shadow: none;
+  }
+  .tile-soon {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    align-self: flex-start;
+  }
+
+  @media (max-width: 520px) {
+    .stats {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,58 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import AppRail from '../components/AppRail.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Highlights the matching feature in the rail. */
+  activeId?: string;
+  /** Footer suffix, e.g. "Model Wallets". */
+  footerLabel?: string;
+}
+const { title, description, activeId, footerLabel } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} footerLabel={footerLabel}>
+  <div class="dash wrap">
+    <aside class="dash-rail">
+      <AppRail activeId={activeId} />
+    </aside>
+    <main id="main" class="dash-main">
+      <slot />
+    </main>
+  </div>
+</BaseLayout>
+
+<style>
+  .dash {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 2.5rem;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+    align-items: start;
+  }
+  .dash-rail {
+    position: sticky;
+    top: 80px;
+    align-self: start;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    padding-right: 0.25rem;
+  }
+  @media (max-width: 860px) {
+    .dash {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+    .dash-rail {
+      position: static;
+      max-height: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--bg-soft);
+      padding: 1rem;
+    }
+  }
+</style>
