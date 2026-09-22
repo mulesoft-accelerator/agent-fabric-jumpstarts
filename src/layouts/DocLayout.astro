@@ -92,19 +92,18 @@ const siblings = feature?.guides ?? [];
 <style>
   .doc-shell {
     display: grid;
-    grid-template-columns: 240px minmax(0, 1fr) 220px;
+    grid-template-columns: 220px minmax(0, 1fr) 200px;
     gap: 2.5rem;
-    padding-top: 2.5rem;
-    padding-bottom: 4rem;
+    padding-bottom: 1rem;
     align-items: start;
   }
 
   .doc-sidebar,
   .doc-toc {
     position: sticky;
-    top: 84px;
+    top: 2rem;
     align-self: start;
-    max-height: calc(100vh - 100px);
+    max-height: calc(100vh - 3rem);
     overflow-y: auto;
     font-size: 0.9rem;
   }
