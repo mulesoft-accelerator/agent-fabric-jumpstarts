@@ -13,7 +13,6 @@ export const site = {
   title: 'Agent Fabric Jumpstarts',
   tagline:
     'A growing library of how-to and demystify guides for MuleSoft Agent Fabric — organized the way the product is.',
-  repo: 'https://github.com/mulesoft-accelerator/agent-fabric-jumpstarts',
 };
 
 export interface Guide {

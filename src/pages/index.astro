@@ -25,140 +25,197 @@ const allAreas = areasByGroup.flatMap((g) => g.areas);
 const liveAreas = allAreas.filter((a) => (a.feature.guides?.length ?? 0) > 0).length;
 const totalGuides = guideCount();
 
-const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
+const live = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
+
+const stats = [
+  { num: totalGuides, label: 'Guides published', sub: 'How-to & demystify guides' },
+  { num: liveAreas, label: 'Areas live', sub: 'With published content' },
+  { num: allAreas.length, label: 'Areas mapped', sub: 'Across the Agent Fabric' },
+];
 ---
 
 <DashboardLayout>
-  <header class="welcome">
-    <span class="eyebrow">MuleSoft Agent Fabric</span>
-    <h1>{site.title}</h1>
-    <p class="lede">{site.tagline}</p>
+  <header class="page-head">
+    <div class="page-head-text">
+      <span class="eyebrow">MuleSoft Agent Fabric</span>
+      <h1>{site.title}</h1>
+    </div>
   </header>
+  <p class="lede">{site.tagline}</p>
 
-  <div class="stats" role="list">
-    <div class="stat" role="listitem">
-      <span class="stat-num">{totalGuides}</span>
-      <span class="stat-label">Guides published</span>
+  <section class="panel">
+    <h2 class="panel-title">Overview</h2>
+    <div class="stats" role="list">
+      {
+        stats.map((s) => (
+          <div class="stat" role="listitem">
+            <span class="stat-label">{s.label}</span>
+            <span class="stat-num">{s.num}</span>
+            <span class="stat-sub">{s.sub}</span>
+          </div>
+        ))
+      }
     </div>
-    <div class="stat" role="listitem">
-      <span class="stat-num">{liveAreas}</span>
-      <span class="stat-label">Areas live</span>
-    </div>
-    <div class="stat" role="listitem">
-      <span class="stat-num">{allAreas.length}</span>
-      <span class="stat-label">Areas mapped</span>
-    </div>
-  </div>
 
-  {
-    areasByGroup.map((g) => (
-      <section class="group">
-        <h2 class="group-title">{g.group}</h2>
-        <div class="card-grid">
-          {g.areas.map((a) =>
-            isLive(a.feature) ? (
-              <a class="tile" href={withBase(a.feature.path!)}>
-                <div class="tile-top">
-                  <span class="tile-icon" aria-hidden="true" style={`--feat:${a.feature.color ?? 'var(--text-muted)'}`}>
-                    {a.feature.icon && <Icon name={a.feature.icon} size={22} />}
-                  </span>
-                  {a.parent && <span class="tile-parent">{a.parent}</span>}
+    <h2 class="panel-title panel-title--sub">Explore the library</h2>
+    {
+      areasByGroup.map((g) => (
+        <section class="group">
+          <h3 class="group-title">{g.group}</h3>
+          <div class="card-grid">
+            {g.areas.map((a) =>
+              live(a.feature) ? (
+                <a class="tile" href={withBase(a.feature.path!)}>
+                  <div class="tile-top">
+                    <span class="tile-icon" aria-hidden="true" style={`--feat:${a.feature.color ?? 'var(--text-muted)'}`}>
+                      {a.feature.icon && <Icon name={a.feature.icon} size={20} />}
+                    </span>
+                    {a.parent && <span class="tile-parent">{a.parent}</span>}
+                  </div>
+                  <h4>{a.feature.name}</h4>
+                  <p class="tile-meta">
+                    {a.feature.guides!.length} guide{a.feature.guides!.length === 1 ? '' : 's'}
+                  </p>
+                  <span class="tile-cta">Explore →</span>
+                </a>
+              ) : (
+                <div class="tile tile--soon">
+                  <div class="tile-top">
+                    <span class="tile-icon" aria-hidden="true" style={`--feat:${a.feature.color ?? 'var(--text-muted)'}`}>
+                      {a.feature.icon && <Icon name={a.feature.icon} size={20} />}
+                    </span>
+                    {a.parent && <span class="tile-parent">{a.parent}</span>}
+                  </div>
+                  <h4>{a.feature.name}</h4>
+                  <p class="tile-meta">Guides coming soon</p>
+                  <span class="tile-soon">Coming soon</span>
                 </div>
-                <h3>{a.feature.name}</h3>
-                <p class="tile-meta">
-                  {a.feature.guides!.length} guide{a.feature.guides!.length === 1 ? '' : 's'}
-                </p>
-                <span class="tile-cta">Explore →</span>
-              </a>
-            ) : (
-              <div class="tile tile--soon">
-                <div class="tile-top">
-                  <span class="tile-icon" aria-hidden="true" style={`--feat:${a.feature.color ?? 'var(--text-muted)'}`}>
-                    {a.feature.icon && <Icon name={a.feature.icon} size={22} />}
-                  </span>
-                  {a.parent && <span class="tile-parent">{a.parent}</span>}
-                </div>
-                <h3>{a.feature.name}</h3>
-                <p class="tile-meta">Guides coming soon</p>
-                <span class="tile-soon">Coming soon</span>
-              </div>
-            )
-          )}
-        </div>
-      </section>
-    ))
-  }
+              )
+            )}
+          </div>
+        </section>
+      ))
+    }
+  </section>
 </DashboardLayout>
 
 <style>
-  .welcome {
-    margin-bottom: 1.5rem;
+  /* ---------- Page header ---------- */
+  .page-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
   }
   .eyebrow {
     display: inline-block;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent);
     background: var(--accent-wash);
-    padding: 0.3rem 0.7rem;
+    padding: 0.28rem 0.65rem;
     border-radius: 999px;
-    margin-bottom: 0.9rem;
+    margin-bottom: 0.75rem;
   }
-  .welcome h1 {
-    font-size: clamp(1.9rem, 4vw, 2.6rem);
-    line-height: 1.08;
+  .page-head h1 {
+    font-size: clamp(1.7rem, 3.5vw, 2.3rem);
+    line-height: 1.1;
     letter-spacing: -0.02em;
-    margin: 0 0 0.6rem;
-  }
-  .lede {
-    font-size: 1.08rem;
-    color: var(--text-soft);
-    max-width: 42rem;
     margin: 0;
   }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .btn-primary:hover {
+    background: var(--accent-soft);
+    text-decoration: none;
+  }
+  .lede {
+    font-size: 1.05rem;
+    color: var(--text-soft);
+    max-width: 44rem;
+    margin: 0 0 1.75rem;
+  }
 
+  /* ---------- Tinted overview panel ---------- */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem 1.75rem 1.75rem;
+  }
+  .panel-title {
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+    color: var(--text);
+  }
+  .panel-title--sub {
+    margin-top: 2rem;
+  }
+
+  /* ---------- Stat cards ---------- */
   .stats {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
-    margin: 1.75rem 0 2.5rem;
   }
   .stat {
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--bg-elevated);
-    padding: 1.1rem 1.25rem;
+    padding: 1.25rem 1.35rem;
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
-  }
-  .stat-num {
-    font-size: 1.9rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
+    gap: 0.3rem;
+    box-shadow: var(--shadow);
   }
   .stat-label {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .stat-num {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--text);
+  }
+  .stat-sub {
+    font-size: 0.82rem;
     color: var(--text-muted);
   }
 
+  /* ---------- Area tiles ---------- */
   .group + .group {
-    margin-top: 2.5rem;
+    margin-top: 1.75rem;
   }
   .group-title {
-    font-size: 0.78rem;
+    font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
     font-weight: 650;
-    margin: 0 0 1rem;
+    margin: 0 0 0.8rem;
   }
   .card-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 1rem;
   }
   .tile {
@@ -171,12 +228,13 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
     background: var(--bg-elevated);
     color: var(--text);
     box-shadow: var(--shadow);
-    transition: transform 0.12s ease, border-color 0.12s ease;
+    transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
   }
   a.tile:hover {
     text-decoration: none;
     transform: translateY(-3px);
     border-color: var(--accent);
+    box-shadow: var(--shadow-lg);
   }
   .tile-top {
     display: flex;
@@ -187,8 +245,8 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
   .tile-icon {
     display: inline-grid;
     place-items: center;
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 2.3rem;
+    height: 2.3rem;
     border-radius: 10px;
     line-height: 1;
     color: var(--feat, var(--text-muted));
@@ -199,7 +257,7 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
     background: var(--bg-soft);
   }
   .tile-parent {
-    font-size: 0.68rem;
+    font-size: 0.66rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--text-muted);
@@ -207,9 +265,10 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
     border-radius: 999px;
     padding: 0.15rem 0.5rem;
   }
-  .tile h3 {
+  .tile h4 {
     margin: 0.2rem 0 0;
-    font-size: 1.05rem;
+    font-size: 1.02rem;
+    font-weight: 650;
     letter-spacing: -0.01em;
   }
   .tile-meta {
@@ -228,7 +287,7 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
     box-shadow: none;
   }
   .tile-soon {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-weight: 600;
@@ -239,9 +298,12 @@ const isLive = (f: Feature) => Boolean(f.path && (f.guides?.length ?? 0) > 0);
     align-self: flex-start;
   }
 
-  @media (max-width: 520px) {
+  @media (max-width: 720px) {
     .stats {
       grid-template-columns: 1fr;
+    }
+    .panel {
+      padding: 1.25rem 1rem 1.5rem;
     }
   }
 </style>
